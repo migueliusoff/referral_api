@@ -1,0 +1,14 @@
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: referral_api
+      POSTGRES_PASSWORD: referral_api
+      POSTGRES_DB: referral_api
+    ports:
+      - "5432:5432"
+    volumes:
+      - db:/var/lib/postgresql/data
+
+volumes:
+  db:

@@ -1,0 +1,49 @@
+version: "3"
+
+services:
+  nginx:
+    image: referral_api_nginx
+    build:
+      context: .
+      dockerfile: deploy/nginx/Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - app
+    networks:
+      - referral_api
+    restart: always
+
+  db:
+    image: postgres:15-alpine
+    networks:
+      - referral_api
+    environment:
+      POSTGRES_USER: $DB_USER
+      POSTGRES_PASSWORD: $DB_PASSWORD
+      POSTGRES_DB: $DB_NAME
+    volumes:
+      - db:/var/lib/postgresql/data
+
+  app:
+    image: referral_api
+    build:
+      context: .
+      dockerfile: deploy/python/Dockerfile
+    environment:
+      DB_HOST: db
+      DB_NAME: $DB_NAME
+      DB_PASSWORD: $DB_PASSWORD
+      DB_USER: $DB_USER
+    depends_on:
+      - db
+    networks:
+      - referral_api
+    restart: always
+
+
+networks:
+  referral_api:
+
+volumes:
+  db:
