@@ -30,6 +30,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     referrer = models.ForeignKey(
         "self", on_delete=models.SET_NULL, null=True, blank=True, verbose_name="реферер", related_name="referrals"
     )
+    is_staff = models.BooleanField(default=False, verbose_name="является сотрудником")
 
     class Meta:
         verbose_name = "пользователь"
