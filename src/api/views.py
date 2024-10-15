@@ -1,10 +1,13 @@
 from rest_framework import generics, mixins, permissions, viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 from api.filters import ReferralCodeFilter
 from api.models import ReferralCode, User
 from api.serializers import (
     ReferralCodeCreateModelSerializer,
     ReferralCodeListModelSerializer,
+    UserModelSerializer,
     UserRegisterModelSerializer,
 )
 
@@ -17,7 +20,7 @@ class RegisterView(generics.CreateAPIView):
 class ReferralCodeViewSet(
     mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet
 ):
-    queryset = ReferralCode.objects.filter().select_related("user")
+    queryset = ReferralCode.objects.all().select_related("user")
     filterset_class = ReferralCodeFilter
 
     def get_permissions(self):
@@ -31,3 +34,11 @@ class ReferralCodeViewSet(
 
         if self.action == "list":
             return ReferralCodeListModelSerializer
+
+
+class UserViewSet(viewsets.GenericViewSet):
+    queryset = User.objects.all()
+
+    @action(detail=True, methods=["get"])
+    def referrals(self, request, *args, **kwargs):
+        return Response(UserModelSerializer(self.get_object().referrals.all(), many=True).data)

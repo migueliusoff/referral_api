@@ -9,7 +9,7 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView,
 )
 
-from api.views import ReferralCodeViewSet, RegisterView
+from api.views import ReferralCodeViewSet, RegisterView, UserViewSet
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -21,6 +21,7 @@ schema_view = get_schema_view(
 )
 router = routers.DefaultRouter()
 router.register("referral_codes", ReferralCodeViewSet, basename="referral_code")
+router.register("users", UserViewSet, basename="user")
 
 urlpatterns = [
     path("register/", RegisterView.as_view(), name="register"),
