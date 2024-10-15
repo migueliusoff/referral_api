@@ -11,7 +11,7 @@ class UserRegisterModelSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         attrs = super().validate(attrs)
         if attrs.get("password") != attrs.get("confirm_password"):
-            raise ValidationError({"confirm_password": "Passwords don't match"})
+            raise ValidationError({"confirm_password": "Пароли не совпадают"})
         validate_password(attrs["password"])
         return attrs
 
