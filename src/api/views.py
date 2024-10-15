@@ -12,7 +12,7 @@ class RegisterView(generics.CreateAPIView):
     serializer_class = UserRegisterModelSerializer
 
 
-class ReferralCodeViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+class ReferralCodeViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
     queryset = ReferralCode.objects.all()
     permission_classes = [permissions.IsAuthenticated]
 
