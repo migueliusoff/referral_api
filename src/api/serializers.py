@@ -5,6 +5,13 @@ from rest_framework.exceptions import ValidationError
 from api.models import ReferralCode, User
 
 
+class UserModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("id", "email")
+        extra_kwargs = {"id": {"read_only": True}}
+
+
 class UserRegisterModelSerializer(serializers.ModelSerializer):
     confirm_password = serializers.CharField(required=True, label="Подтверждение пароля", write_only=True)
 
@@ -37,3 +44,11 @@ class ReferralCodeCreateModelSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data["user"] = self.context["request"].user
         return super().create(validated_data)
+
+
+class ReferralCodeListModelSerializer(serializers.ModelSerializer):
+    user = UserModelSerializer()
+
+    class Meta:
+        model = ReferralCode
+        fields = ("id", "user", "value", "expiration", "is_active", "is_expired")
