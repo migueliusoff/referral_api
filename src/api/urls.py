@@ -2,14 +2,14 @@ from django.urls import include, path
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from oauth2_provider import urls as oauth2_urls
-from rest_framework import permissions
+from rest_framework import permissions, routers
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
     TokenVerifyView,
 )
 
-from api.views import RegisterView
+from api.views import ReferralCodeViewSet, RegisterView
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -19,6 +19,8 @@ schema_view = get_schema_view(
     public=True,
     permission_classes=(permissions.AllowAny,),
 )
+router = routers.DefaultRouter()
+router.register("referral_codes", ReferralCodeViewSet, basename="referral_code")
 
 urlpatterns = [
     path("register/", RegisterView.as_view(), name="register"),
@@ -29,3 +31,4 @@ urlpatterns = [
     path("token/verify/", TokenVerifyView.as_view(), name="token_verify"),
     path("oauth2/", include(oauth2_urls)),
 ]
+urlpatterns += router.urls
