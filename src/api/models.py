@@ -3,7 +3,7 @@ import uuid
 from django.contrib.auth import password_validation
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.auth.models import UserManager as DjangoUserManager
-from django.core.validators import MinValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils import timezone
 
@@ -52,13 +52,29 @@ class User(AbstractBaseUser, BaseModel, PermissionsMixin):
 class ReferralCode(BaseModel):
     value = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, verbose_name="значение")
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="referral_codes", verbose_name="пользователь")
-    expiration = models.PositiveIntegerField(verbose_name="срок годности в часах", validators=[MinValueValidator(1)])
+    expiration = models.PositiveIntegerField(
+        verbose_name="срок годности в часах", validators=[MinValueValidator(1), MaxValueValidator(10000)]
+    )
+    is_active = models.BooleanField(default=True, verbose_name="является активным")
 
     @property
-    def is_active(self):
+    def is_expired(self):
         if self.created_at + timezone.timedelta(hours=self.expiration) <= timezone.now():
-            return False
-        return True
+            return True
+        return False
+
+    def save(
+        self,
+        *args,
+        force_insert=False,
+        force_update=False,
+        using=None,
+        update_fields=None,
+    ):
+        super().save(
+            *args, force_insert=force_insert, force_update=force_update, using=using, update_fields=update_fields
+        )
+        ReferralCode.objects.filter(user=self.user).exclude(id=self.id).update(is_active=False)
 
     class Meta:
         verbose_name = "реферальный код"
