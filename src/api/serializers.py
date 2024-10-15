@@ -2,7 +2,7 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from api.models import User
+from api.models import ReferralCode, User
 
 
 class UserRegisterModelSerializer(serializers.ModelSerializer):
@@ -26,3 +26,14 @@ class UserRegisterModelSerializer(serializers.ModelSerializer):
         model = User
         fields = ("email", "password", "confirm_password")
         extra_kwargs = {"password": {"write_only": True}}
+
+
+class ReferralCodeCreateModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ReferralCode
+        fields = ("user", "value", "expiration")
+        extra_kwargs = {"user": {"read_only": True}, "value": {"read_only": True}}
+
+    def create(self, validated_data):
+        validated_data["user"] = self.context["request"].user
+        return super().create(validated_data)
