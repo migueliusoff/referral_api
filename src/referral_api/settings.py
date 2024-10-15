@@ -143,3 +143,4 @@ REST_FRAMEWORK = {
 OAUTH2_PROVIDER = {"SCOPES": {"read": "Read scope", "write": "Write scope"}}
 
 LOGIN_URL = "/admin/login/"
+SWAGGER_SETTINGS = {"SECURITY_DEFINITIONS": {"Bearer": {"type": "apiKey", "name": "Authorization", "in": "header"}}}
